@@ -1,5 +1,7 @@
 # DataForSEO MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@finedesignz/dataforseo-mcp-server-typescript)](https://smithery.ai/server/@finedesignz/dataforseo-mcp-server-typescript)
+
 Model Context Protocol (MCP) server implementation for DataForSEO, enabling AI assistants to interact with selected DataForSEO APIs and obtain SEO data through a standardized interface. 
 
 ## Features
@@ -20,6 +22,15 @@ Model Context Protocol (MCP) server implementation for DataForSEO, enabling AI a
 
 ## Installation
 
+### Installing via Smithery
+
+To install dataforseo-mcp-server-typescript for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@finedesignz/dataforseo-mcp-server-typescript):
+
+```bash
+npx -y @smithery/cli install @finedesignz/dataforseo-mcp-server-typescript --client claude
+```
+
+### Manual Installation
 1. Clone the repository:
 ```bash
 git clone https://github.com/dataforseo/mcp-server-typescript
