@@ -1,0 +1,15 @@
+services:
+  dataforseo-mcp:
+    build: .
+    container_name: dataforseo-mcp-server
+    stdin_open: true
+    tty: true
+    environment:
+      - DATAFORSEO_USERNAME=${DATAFORSEO_USERNAME}
+      - DATAFORSEO_PASSWORD=${DATAFORSEO_PASSWORD}
+      - ENABLED_MODULES=${ENABLED_MODULES:-SERP,KEYWORDS_DATA,ONPAGE,DATAFORSEO_LABS,BACKLINKS,BUSINESS_DATA,DOMAIN_ANALYTICS,CONTENT_ANALYSIS}
+      - DATAFORSEO_FULL_RESPONSE=${DATAFORSEO_FULL_RESPONSE:-false}
+    env_file:
+      - .env
+    restart: unless-stopped
+    command: ["local"]
