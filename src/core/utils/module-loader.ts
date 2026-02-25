@@ -10,6 +10,7 @@ import { BaseModule } from '../modules/base.module.js';
 import { EnabledModules, isModuleEnabled } from '../config/modules.config.js';
 import { ContentAnalysisApiModule } from '../modules/content-analysis/content-analysis-api.module.js';
 import { AiOptimizationApiModule } from '../modules/ai-optimization/ai-optimization-api.module.js';
+import { AppDataApiModule } from '../modules/app-data/app-data-api.module.js';
 
 export class ModuleLoaderService {
   static loadModules(dataForSEOClient: DataForSEOClient, enabledModules: EnabledModules): BaseModule[] {
@@ -41,6 +42,9 @@ export class ModuleLoaderService {
     }
     if (isModuleEnabled('AI_OPTIMIZATION', enabledModules)) {
       modules.push(new AiOptimizationApiModule(dataForSEOClient));
+    }
+    if (isModuleEnabled('APP_DATA', enabledModules)) {
+      modules.push(new AppDataApiModule(dataForSEOClient));
     }
 
     return modules;
