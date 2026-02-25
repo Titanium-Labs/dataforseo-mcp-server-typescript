@@ -33,6 +33,7 @@ import {
 import { name, version } from "../core/utils/version.js";
 import { ModuleLoaderService } from "../core/utils/module-loader.js";
 import { initializeFieldConfiguration } from "../core/config/field-configuration.js";
+import fs from "node:fs";
 
 // Initialize field configuration if provided
 initializeFieldConfiguration();
@@ -107,6 +108,18 @@ function getSessionId() {
 async function main() {
   const app = express();
   app.use(express.json());
+  const readSecret = (name: string): string | undefined => {
+    const fileVar = process.env[`${name}_FILE`];
+    if (fileVar) {
+      try {
+        return fs.readFileSync(fileVar, "utf-8").trim();
+      } catch (err) {
+        console.error(`Failed to read ${name}_FILE at ${fileVar}:`, err);
+        return undefined;
+      }
+    }
+    return process.env[name] || undefined;
+  };
 
   // Basic Auth Middleware
   const basicAuth = (req: Request, res: Response, next: NextFunction) => {
@@ -156,8 +169,8 @@ async function main() {
       // Check if we have valid credentials
       if (!req.username && !req.password) {
         // If no request auth, check environment variables
-        const envUsername = process.env.DATAFORSEO_USERNAME;
-        const envPassword = process.env.DATAFORSEO_PASSWORD;
+        const envUsername = readSecret("DATAFORSEO_USERNAME");
+        const envPassword = readSecret("DATAFORSEO_PASSWORD");
         if (!envUsername || !envPassword) {
           console.error("No DataForSEO credentials provided");
           res.status(401).json({
