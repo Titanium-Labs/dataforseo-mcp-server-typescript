@@ -12,6 +12,8 @@ Model Context Protocol (MCP) server implementation for DataForSEO, enabling AI a
 - **BUSINESS DATA API**: publicly available data on any business entity;
 - **DOMAIN ANALYTICS API**: data on website traffic, technologies, and Whois details;
 - **CONTENT ANALYSIS API**: robust source of data for brand monitoring, sentiment analysis, and citation management;
+- **AI OPTIMIZATION API**: AI responses, mentions, keyword data, and scraper utilities for LLM-focused workflows;
+- **APP DATA API**: app store data for Google Play and Apple, including search, listings, reviews, and categories;
 
 ## Prerequisites
 
@@ -39,7 +41,7 @@ export DATAFORSEO_PASSWORD=your_password
 
 # Optional: specify which modules to enable (comma-separated)
 # If not set, all modules will be enabled
-export ENABLED_MODULES="SERP,KEYWORDS_DATA,ONPAGE,DATAFORSEO_LABS,BACKLINKS,BUSINESS_DATA,DOMAIN_ANALYTICS"
+export ENABLED_MODULES="SERP,KEYWORDS_DATA,ONPAGE,DATAFORSEO_LABS,BACKLINKS,BUSINESS_DATA,DOMAIN_ANALYTICS,CONTENT_ANALYSIS,AI_OPTIMIZATION,APP_DATA"
 
 # Optional: enable full API responses
 # If not set or set to false, the server will filter and transform API responses to a more concise format

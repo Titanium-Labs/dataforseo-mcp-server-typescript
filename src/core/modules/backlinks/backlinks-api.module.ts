@@ -20,6 +20,7 @@ import { BacklinksReferringNetworksTool } from './tools/backlinks-referring-netw
 import { BacklinksSummaryTool } from './tools/backlinks-summary.tool.js';
 import { BacklinksTimeseriesNewLostSummaryTool } from './tools/backlinks-timeseries-new-lost-summary.tool.js';
 import { BacklinksTimeseriesSummaryTool } from './tools/backlinks-timeseries-summary.tool.js';
+import { BacklinksHistoryTool } from './tools/backlinks-history.tool.js';
 
 export class BacklinksApiModule extends BaseModule {
   constructor(client: DataForSEOClient) {
@@ -47,7 +48,8 @@ export class BacklinksApiModule extends BaseModule {
       new BacklinksTimeseriesNewLostSummaryTool(this.dataForSEOClient),
       new BacklinksTimeseriesSummaryTool(this.dataForSEOClient),
       new BacklinksBulkPagesSummaryTool(this.dataForSEOClient),
-      new BacklinksFiltersTool(this.dataForSEOClient)
+      new BacklinksFiltersTool(this.dataForSEOClient),
+      new BacklinksHistoryTool(this.dataForSEOClient)
       // Add more tools here
     ];
 

@@ -9,6 +9,7 @@ import { DomainAnalyticsApiModule } from '../modules/domain-analytics/domain-ana
 import { BaseModule } from '../modules/base.module.js';
 import { EnabledModules, isModuleEnabled } from '../config/modules.config.js';
 import { ContentAnalysisApiModule } from '../modules/content-analysis/content-analysis-api.module.js';
+import { AiOptimizationApiModule } from '../modules/ai-optimization/ai-optimization-api.module.js';
 
 export class ModuleLoaderService {
   static loadModules(dataForSEOClient: DataForSEOClient, enabledModules: EnabledModules): BaseModule[] {
@@ -37,6 +38,9 @@ export class ModuleLoaderService {
     }
     if(isModuleEnabled('CONTENT_ANALYSIS', enabledModules)) {
       modules.push(new ContentAnalysisApiModule(dataForSEOClient));
+    }
+    if (isModuleEnabled('AI_OPTIMIZATION', enabledModules)) {
+      modules.push(new AiOptimizationApiModule(dataForSEOClient));
     }
 
     return modules;

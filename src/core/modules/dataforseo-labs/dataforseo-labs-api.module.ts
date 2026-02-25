@@ -20,6 +20,17 @@ import { GooglePageIntersectionsTool } from './tools/google/competitor-research/
 import { DataForSeoLabsFilterTool } from './tools/labs-filters.tool.js';
 import { GoogleBulkTrafficEstimationTool } from './tools/google/competitor-research/google-bulk-traffic-estimation.tool.js';
 import { GoogleHistoricalKeywordDataTool } from './tools/google/keyword-research/google-historical-keyword-data.tool.js';
+import { DataForseoLabsGoogleCategoriesForDomainTool } from './tools/google/keyword-research/google-categories-for-domain.tool.js';
+import { DataForseoLabsGoogleKeywordsForCategoriesTool } from './tools/google/keyword-research/google-keywords-for-categories.tool.js';
+import { DataForseoLabsGoogleDomainMetricsByCategoriesTool } from './tools/google/keyword-research/google-domain-metrics-by-categories.tool.js';
+import { DataForseoLabsGoogleDomainWhoisOverviewTool } from './tools/google/competitor-research/google-domain-whois-overview.tool.js';
+import { DataForseoLabsGoogleRelevantPagesTool } from './tools/google/competitor-research/google-relevant-pages.tool.js';
+import { DataForseoLabsAmazonBulkSearchVolumeTool } from './tools/amazon/amazon-bulk-search-volume.tool.js';
+import { DataForseoLabsAmazonRelatedKeywordsTool } from './tools/amazon/amazon-related-keywords.tool.js';
+import { DataForseoLabsAmazonRankedKeywordsTool } from './tools/amazon/amazon-ranked-keywords.tool.js';
+import { DataForseoLabsAmazonProductRankOverviewTool } from './tools/amazon/amazon-product-rank-overview.tool.js';
+import { DataForseoLabsAmazonProductCompetitorsTool } from './tools/amazon/amazon-product-competitors.tool.js';
+import { DataForseoLabsAmazonProductKeywordIntersectionsTool } from './tools/amazon/amazon-product-keyword-intersections.tool.js';
 
 export class DataForSEOLabsApi extends BaseModule {
   constructor(client: DataForSEOClient) {
@@ -48,6 +59,17 @@ export class DataForSEOLabsApi extends BaseModule {
       new GoogleBulkTrafficEstimationTool(this.dataForSEOClient),
       new DataForSeoLabsFilterTool(this.dataForSEOClient),
       new GoogleHistoricalKeywordDataTool(this.dataForSEOClient),
+      new DataForseoLabsGoogleCategoriesForDomainTool(this.dataForSEOClient),
+      new DataForseoLabsGoogleKeywordsForCategoriesTool(this.dataForSEOClient),
+      new DataForseoLabsGoogleDomainMetricsByCategoriesTool(this.dataForSEOClient),
+      new DataForseoLabsGoogleDomainWhoisOverviewTool(this.dataForSEOClient),
+      new DataForseoLabsGoogleRelevantPagesTool(this.dataForSEOClient),
+      new DataForseoLabsAmazonBulkSearchVolumeTool(this.dataForSEOClient),
+      new DataForseoLabsAmazonRelatedKeywordsTool(this.dataForSEOClient),
+      new DataForseoLabsAmazonRankedKeywordsTool(this.dataForSEOClient),
+      new DataForseoLabsAmazonProductRankOverviewTool(this.dataForSEOClient),
+      new DataForseoLabsAmazonProductCompetitorsTool(this.dataForSEOClient),
+      new DataForseoLabsAmazonProductKeywordIntersectionsTool(this.dataForSEOClient),
       // Add more tools here
     ];
 
