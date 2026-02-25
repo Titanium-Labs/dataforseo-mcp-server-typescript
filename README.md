@@ -43,6 +43,10 @@ export DATAFORSEO_PASSWORD=your_password
 # If not set, all modules will be enabled
 export ENABLED_MODULES="SERP,KEYWORDS_DATA,ONPAGE,DATAFORSEO_LABS,BACKLINKS,BUSINESS_DATA,DOMAIN_ANALYTICS,CONTENT_ANALYSIS,AI_OPTIMIZATION,APP_DATA"
 
+# Optional: supply secrets via files (recommended for CI/Docker/K8s secrets)
+# export DATAFORSEO_USERNAME_FILE=/run/secrets/dfs_user
+# export DATAFORSEO_PASSWORD_FILE=/run/secrets/dfs_pass
+
 # Optional: enable full API responses
 # If not set or set to false, the server will filter and transform API responses to a more concise format
 # If set to true, the server will return the full, unmodified API responses
