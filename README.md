@@ -487,6 +487,126 @@ cp field-config.example.json my-config.json
 npx dataforseo-mcp-server http --configuration my-config.json
 ```
 
+## Recommended Agents
+
+Because the full DataForSEO MCP exposes 157 tools across 10 modules, loading every tool into a single agent context is rarely efficient. The configurations below show how to group related modules into focused, purpose-built agents using the `ENABLED_MODULES` environment variable. Each agent stays well within the practical tool-count limits of most LLM hosts while covering a coherent set of use cases.
+
+<details>
+<summary><strong>1. SERP &amp; Search Agent</strong> — 35 tools (SERP + Keywords Data)</summary>
+
+**Modules:** `SERP`, `KEYWORDS_DATA`
+
+**Use cases:** keyword research, search volume analysis, real-time SERP monitoring, Google/Bing Ads intelligence, trends analysis, YouTube research, autocomplete discovery.
+
+**Environment:**
+```bash
+export ENABLED_MODULES="SERP,KEYWORDS_DATA"
+```
+
+**Tools included:**
+
+*SERP (21):* `serp_ai_summary`, `serp_baidu_organic_live_advanced`, `serp_google_ads_search_live_advanced`, `serp_google_ai_mode_live_advanced`, `serp_google_autocomplete_live_advanced`, `serp_google_dataset_search_live_advanced`, `serp_google_events_live_advanced`, `serp_google_images_live_advanced`, `serp_google_jobs_live_advanced`, `serp_google_local_finder_live_advanced`, `serp_google_maps_live_advanced`, `serp_google_news_live_advanced`, `serp_google_search_by_image_live_advanced`, `serp_locations`, `serp_naver_organic_live_advanced`, `serp_screenshot`, `serp_youtube_locations`, `serp_youtube_organic_live_advanced`, `serp_youtube_video_comments_live_advanced`, `serp_youtube_video_info_live_advanced`, `serp_youtube_video_subtitles_live_advanced`
+
+*Keywords Data (14):* `keywords_data_bing_keyword_performance`, `keywords_data_bing_keywords_for_keywords`, `keywords_data_bing_keywords_for_site`, `keywords_data_bing_search_volume`, `keywords_data_clickstream_search_volume`, `keywords_data_dataforseo_trends_demography`, `keywords_data_dataforseo_trends_explore`, `keywords_data_dataforseo_trends_subregion_interests`, `keywords_data_google_ads_ad_traffic_by_keywords`, `keywords_data_google_ads_keywords_for_keywords`, `keywords_data_google_ads_keywords_for_site`, `keywords_data_google_ads_search_volume`, `keywords_data_google_trends_categories`, `keywords_data_google_trends_explore`
+
+</details>
+
+<details>
+<summary><strong>2. Technical SEO Agent</strong> — 18 tools (OnPage)</summary>
+
+**Modules:** `ONPAGE`
+
+**Use cases:** site crawling, Core Web Vitals and Lighthouse auditing, duplicate content detection, redirect chain analysis, page screenshot capture, resource waterfall analysis, non-indexable page identification.
+
+**Environment:**
+```bash
+export ENABLED_MODULES="ONPAGE"
+```
+
+**Tools included:**
+
+*OnPage (18):* `on_page_content_parsing`, `on_page_duplicate_content`, `on_page_duplicate_tags`, `on_page_force_stop`, `on_page_instant_pages`, `on_page_keyword_density`, `on_page_lighthouse_live_json`, `on_page_lighthouse_task_post`, `on_page_links`, `on_page_non_indexable`, `on_page_page_screenshot`, `on_page_pages`, `on_page_redirect_chains`, `on_page_resources`, `on_page_summary`, `on_page_task_post`, `on_page_waterfall`
+
+</details>
+
+<details>
+<summary><strong>3. Domain &amp; Backlink Agent</strong> — 50 tools (DataForSEO Labs + Backlinks)</summary>
+
+**Modules:** `DATAFORSEO_LABS`, `BACKLINKS`
+
+**Use cases:** competitor gap analysis, keyword difficulty scoring, bulk traffic estimation, domain rank overviews, backlink audits, referring domain and network analysis, spam score checks, historical link data.
+
+**Environment:**
+```bash
+export ENABLED_MODULES="DATAFORSEO_LABS,BACKLINKS"
+```
+
+**Tools included:**
+
+*DataForSEO Labs (29):* `dataforseo_labs_amazon_bulk_search_volume`, `dataforseo_labs_amazon_product_competitors`, `dataforseo_labs_amazon_product_keyword_intersections`, `dataforseo_labs_amazon_product_rank_overview`, `dataforseo_labs_amazon_ranked_keywords`, `dataforseo_labs_amazon_related_keywords`, `dataforseo_labs_available_filters`, `dataforseo_labs_bulk_keyword_difficulty`, `dataforseo_labs_bulk_traffic_estimation`, `dataforseo_labs_google_categories_for_domain`, `dataforseo_labs_google_competitors_domain`, `dataforseo_labs_google_domain_intersection`, `dataforseo_labs_google_domain_metrics_by_categories`, `dataforseo_labs_google_domain_rank_overview`, `dataforseo_labs_google_domain_whois_overview`, `dataforseo_labs_google_historical_keyword_data`, `dataforseo_labs_google_historical_rank_overview`, `dataforseo_labs_google_keyword_ideas`, `dataforseo_labs_google_keyword_overview`, `dataforseo_labs_google_keyword_suggestions`, `dataforseo_labs_google_keywords_for_categories`, `dataforseo_labs_google_keywords_for_site`, `dataforseo_labs_google_page_intersection`, `dataforseo_labs_google_ranked_keywords`, `dataforseo_labs_google_related_keywords`, `dataforseo_labs_google_relevant_pages`, `dataforseo_labs_google_serp_competitors`, `dataforseo_labs_google_top_searches`, `dataforseo_labs_search_intent`
+
+*Backlinks (21):* `backlinks_anchors`, `backlinks_available_filters`, `backlinks_backlinks`, `backlinks_bulk_backlinks`, `backlinks_bulk_new_lost_backlinks`, `backlinks_bulk_new_lost_referring_domains`, `backlinks_bulk_ranks`, `backlinks_bulk_referring_domains`, `backlinks_bulk_spam_score`, `backlinks_competitors`, `backlinks_domain_intersection`, `backlinks_domain_pages`, `backlinks_domain_pages_summary`, `backlinks_history`, `backlinks_page_intersection`, `backlinks_referring_domains`, `backlinks_referring_networks`, `backlinks_summary`, `backlinks_timeseries_new_lost_summary`, `backlinks_timeseries_summary`
+
+</details>
+
+<details>
+<summary><strong>4. Business &amp; Local Agent</strong> — 25 tools (Business Data + Content Analysis)</summary>
+
+**Modules:** `BUSINESS_DATA`, `CONTENT_ANALYSIS`
+
+**Use cases:** local business research, Google My Business data, hotel and travel listings, review aggregation (Google, Trustpilot, Tripadvisor), social media monitoring (Facebook, Pinterest, Reddit), brand sentiment analysis, citation tracking.
+
+**Environment:**
+```bash
+export ENABLED_MODULES="BUSINESS_DATA,CONTENT_ANALYSIS"
+```
+
+**Tools included:**
+
+*Business Data (18):* `business_data_business_listings_categories_aggregation`, `business_data_business_listings_filters`, `business_data_business_listings_search`, `business_data_google_hotel_info`, `business_data_google_hotel_searches`, `business_data_google_my_business_info`, `business_data_google_my_business_updates`, `business_data_google_questions_answers`, `business_data_google_reviews`, `business_data_social_media_facebook`, `business_data_social_media_pinterest`, `business_data_social_media_reddit`, `business_data_tripadvisor_reviews`, `business_data_tripadvisor_search`, `business_data_trustpilot_reviews`, `business_data_trustpilot_search`
+
+*Content Analysis (7):* `content_analysis_categories`, `content_analysis_category_trends`, `content_analysis_phrase_trends`, `content_analysis_rating_distribution`, `content_analysis_search`, `content_analysis_sentiment_analysis`, `content_analysis_summary`
+
+</details>
+
+<details>
+<summary><strong>5. AI &amp; App Intelligence Agent</strong> — 26 tools (AI Optimization + App Data)</summary>
+
+**Modules:** `AI_OPTIMIZATION`, `APP_DATA`
+
+**Use cases:** LLM brand mention tracking, AI model response analysis (ChatGPT, Claude, Gemini, Perplexity), AI keyword volume, app store research and review mining for Google Play and Apple App Store.
+
+**Environment:**
+```bash
+export ENABLED_MODULES="AI_OPTIMIZATION,APP_DATA"
+```
+
+**Tools included:**
+
+*AI Optimization (16):* `ai_optimization_ai_keyword_data_search_volume`, `ai_optimization_available_filters`, `ai_optimization_llm_mentions_aggregated_metrics`, `ai_optimization_llm_mentions_cross_aggregated`, `ai_optimization_llm_mentions_search`, `ai_optimization_llm_mentions_top_domains`, `ai_optimization_llm_mentions_top_pages`, `ai_optimization_llm_responses_chatgpt`, `ai_optimization_llm_responses_chatgpt_models`, `ai_optimization_llm_responses_claude`, `ai_optimization_llm_responses_claude_models`, `ai_optimization_llm_responses_gemini`, `ai_optimization_llm_responses_gemini_models`, `ai_optimization_llm_responses_perplexity`, `ai_optimization_llm_responses_perplexity_models`, `ai_optimization_llm_scraper_chatgpt`
+
+*App Data (10):* `app_data_apple_app_info`, `app_data_apple_app_list`, `app_data_apple_app_listings_search`, `app_data_apple_app_reviews`, `app_data_apple_app_searches`, `app_data_apple_categories`, `app_data_google_categories`, `app_data_google_play_app_info`, `app_data_google_play_app_list`, `app_data_google_play_app_listings_search`
+
+</details>
+
+<details>
+<summary><strong>6. Domain Analytics Agent</strong> — 10 tools (Domain Analytics)</summary>
+
+**Modules:** `DOMAIN_ANALYTICS`
+
+**Use cases:** technology stack fingerprinting, bulk domain technology discovery, HTML-term-based domain search, WHOIS ownership and expiry lookups, technology adoption trend analysis.
+
+**Environment:**
+```bash
+export ENABLED_MODULES="DOMAIN_ANALYTICS"
+```
+
+**Tools included:**
+
+*Domain Analytics (10):* `domain_analytics_technologies_aggregation`, `domain_analytics_technologies_available_filters`, `domain_analytics_technologies_domain_technologies`, `domain_analytics_technologies_domains_by_html_terms`, `domain_analytics_technologies_domains_by_technology`, `domain_analytics_technologies_summary`, `domain_analytics_technologies_technology_stats`, `domain_analytics_whois_available_filters`, `domain_analytics_whois_overview`
+
+</details>
+
 ## What endpoints/APIs do you want us to support next?
 
 We're always looking to expand the capabilities of this MCP server. If you have specific DataForSEO endpoints or APIs you'd like to see supported, please:
