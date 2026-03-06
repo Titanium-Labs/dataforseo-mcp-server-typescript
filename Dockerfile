@@ -6,5 +6,6 @@ COPY tsconfig.json ./
 COPY src/ ./src/
 RUN npm run build
 ENV NODE_ENV=production
-ENTRYPOINT ["node", "build/main/main/cli.js"]
-CMD ["local"]
+ENV PORT=3000
+EXPOSE 3000
+CMD ["node", "build/main/main/index-http.js"]
