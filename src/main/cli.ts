@@ -27,22 +27,26 @@ const argsWithoutMode = args.slice(1);
 const childArgs = argsWithoutMode.filter((_, index) => {
     return index !== configIndex - 1 && index !== configIndex;});
     
+function spawnAndWait(script: string, extraArgs: string[]) {
+    const child = spawn('node', [script, ...extraArgs], {
+        stdio: 'inherit',
+        env: { ...process.env }
+    });
+    child.on('exit', (code) => process.exit(code ?? 0));
+    child.on('error', (err) => {
+        console.error('Failed to start server:', err);
+        process.exit(1);
+    });
+    // Forward signals to child
+    for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP'] as const) {
+        process.on(sig, () => child.kill(sig));
+    }
+}
+
 if (mode === 'http') {
-    const httpServer = join(__dirname, 'index-http.js');
-    spawn('node', [httpServer, ...childArgs], { 
-        stdio: 'inherit',
-        env: { ...process.env }
-    });
+    spawnAndWait(join(__dirname, 'index-http.js'), childArgs);
 } else if (mode === 'sse') {
-    const sseServer = join(__dirname, 'index-sse-http.js');
-    spawn('node', [sseServer, ...childArgs], { 
-        stdio: 'inherit',
-        env: { ...process.env }
-    });
+    spawnAndWait(join(__dirname, 'index-sse-http.js'), childArgs);
 } else {
-    const localServer = join(__dirname, 'index.js');
-    spawn('node', [localServer, ...childArgs], { 
-        stdio: 'inherit',
-        env: { ...process.env }
-    });
+    spawnAndWait(join(__dirname, 'index.js'), childArgs);
 }
