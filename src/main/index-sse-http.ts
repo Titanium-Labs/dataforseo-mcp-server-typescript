@@ -6,10 +6,9 @@ import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { z } from 'zod';
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { DataForSEOClient, DataForSEOConfig } from '../core/client/dataforseo.client.js';
-import { EnabledModulesSchema, isModuleEnabled } from '../core/config/modules.config.js';
+import { EnabledModulesSchema } from '../core/config/modules.config.js';
 import { BaseModule, ToolDefinition } from '../core/modules/base.module.js';
 import { name, version } from '../core/utils/version.js';
-import { InMemoryEventStore } from '@modelcontextprotocol/sdk/examples/shared/inMemoryEventStore.js';
 import { ModuleLoaderService } from '../core/utils/module-loader.js';
 import { initializeFieldConfiguration } from '../core/config/field-configuration.js';
 import fs from 'node:fs';
@@ -124,6 +123,36 @@ function getServer(username: string | undefined, password: string | undefined): 
 // Create Express application
 const app = express();
 app.use(express.json());
+
+//=============================================================================
+// SERVER INFO & HEALTH
+//=============================================================================
+
+const serverInfo = {
+  name,
+  version,
+  description: 'DataForSEO MCP Server — modular SEO API integration with HTTP and SSE transports',
+  transports: {
+    streamableHttp: {
+      endpoint: '/http',
+      methods: ['POST'],
+      protocol: '2025-03-26',
+    },
+    sse: {
+      endpoints: { connect: '/sse', messages: '/messages' },
+      protocol: '2024-11-05',
+    },
+  },
+  health: '/health',
+};
+
+app.get('/', (_req: Request, res: Response) => {
+  res.status(200).json(serverInfo);
+});
+
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(200).json({ status: 'ok', sessions: Object.keys(transports).length });
+});
 
 // Basic Auth Middleware
 const basicAuth = (req: Request, res: Response, next: NextFunction) => {
@@ -350,33 +379,20 @@ app.post("/messages", basicAuth, async (req: Request, res: Response) => {
 
 // Start the server
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-const server = app.listen(PORT, () => {
-  console.log(`DataForSEO MCP Server with SSE compatibility listening on port ${PORT}`);
-  console.log(`
-==============================================
-SUPPORTED TRANSPORT OPTIONS:
-
-1. Streamable Http (Protocol version: 2025-03-26)
-   Endpoint: /http (POST)
-
-2. Http + SSE (Protocol version: 2024-11-05)
-   Endpoints: /sse (GET) and /messages (POST)
-   Usage:
-     - Establish SSE stream with GET to /sse
-     - Send requests with POST to /messages?sessionId=<id>
-==============================================
-`);
+const httpServer = app.listen(PORT, () => {
+  console.log(`DataForSEO MCP Server listening on port ${PORT}`);
+  console.log(`  Streamable HTTP: /http`);
+  console.log(`  Legacy SSE:      /sse + /messages`);
+  console.log(`  Health:          /health`);
+  console.log(`  Info:            /`);
 });
 
 // Handle server shutdown
-process.on('SIGINT', async () => {
-  console.log('Shutting down server...');
-  
+async function shutdown(signal: string) {
+  console.log(`\n${signal} received, shutting down...`);
+
   // Clear cleanup interval
   clearInterval(cleanupInterval);
-
-  // Close HTTP server
-  server.close();
 
   // Close all active transports
   for (const sessionId in transports) {
@@ -388,6 +404,16 @@ process.on('SIGINT', async () => {
       console.error(`Error closing transport for session ${sessionId}:`, error);
     }
   }
-  console.log('Server shutdown complete');
-  process.exit(0);
-});
+
+  // Close HTTP server
+  httpServer.close(() => {
+    console.log('Server shutdown complete');
+    process.exit(0);
+  });
+
+  // Force exit after 5s if connections don't close
+  setTimeout(() => process.exit(1), 5000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

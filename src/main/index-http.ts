@@ -137,6 +137,32 @@ async function main() {
   const app = express();
   app.use(express.json());
 
+  //=============================================================================
+  // SERVER INFO & HEALTH
+  //=============================================================================
+
+  const serverInfoPayload = {
+    name,
+    version,
+    description: 'DataForSEO MCP Server — modular SEO API integration with HTTP transport and OAuth',
+    transports: {
+      streamableHttp: {
+        endpoint: '/http',
+        methods: ['POST'],
+        protocol: '2025-03-26',
+      },
+    },
+    health: '/health',
+  };
+
+  app.get('/', (_req: ExpressRequest, res: Response) => {
+    res.status(200).json(serverInfoPayload);
+  });
+
+  app.get('/health', (_req: ExpressRequest, res: Response) => {
+    res.status(200).json({ status: 'ok' });
+  });
+
   // MCP endpoint URL used for OAuth protected resource metadata
   const publicUrl = readSecret("MCP_PUBLIC_URL") || "http://localhost:3000";
   const issuerUrl = new URL(publicUrl);
@@ -222,9 +248,26 @@ async function main() {
   });
 
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-  app.listen(PORT, () => {
-    console.log(`MCP Stateless Streamable HTTP Server listening on port ${PORT}`);
+  const httpServer = app.listen(PORT, () => {
+    console.log(`DataForSEO MCP Server listening on port ${PORT}`);
+    console.log(`  Streamable HTTP: /http`);
+    console.log(`  Health:          /health`);
+    console.log(`  Info:            /`);
   });
+
+  // Graceful shutdown
+  async function shutdown(signal: string) {
+    console.log(`\n${signal} received, shutting down...`);
+    httpServer.close(() => {
+      console.log('Server shutdown complete');
+      process.exit(0);
+    });
+    // Force exit after 5s if connections don't close
+    setTimeout(() => process.exit(1), 5000).unref();
+  }
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 async function handleMcpRequest(req: Request, res: Response) {
