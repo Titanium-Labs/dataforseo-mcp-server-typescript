@@ -158,6 +158,11 @@ const serverInfo = {
     },
   },
   health: '/health',
+  auth: {
+    gateway_token_header: "X-Gateway-Token",
+    description: "Pass your Claude Gateway API token (cgw_xxx) as X-Gateway-Token header for personalized credentials. Without it, shared global credentials are used.",
+    gateway_dashboard: "https://claude-gateway.coolify.titaniumlabs.us/dashboard",
+  },
 };
 
 app.get('/', (_req: Request, res: Response) => {
@@ -210,7 +215,27 @@ app.post('/http', basicAuth, async (req: Request, res: Response) => {
     try {
       console.error(Date.now().toLocaleString())
       
-    // Handle credentials
+    // Handle credentials — try Basic Auth, then X-Gateway-Token, then env vars
+      if (!req.username && !req.password) {
+        // Try per-session credential resolution via X-Gateway-Token
+        const gatewayToken = req.headers["x-gateway-token"] as string | undefined;
+        if (gatewayToken) {
+          try {
+            const creds = await loadCredentials("dataforseo", {
+              login: "DATAFORSEO_LOGIN",
+              password: "DATAFORSEO_PASSWORD",
+            }, { gatewayToken });
+            if (creds.login && creds.password) {
+              req.username = creds.login;
+              req.password = creds.password;
+              console.error(`[gateway] Per-session credentials resolved via X-Gateway-Token`);
+            }
+          } catch (err) {
+            console.error("[gateway] Per-session credential fetch failed:", err);
+          }
+        }
+      }
+
       if (!req.username && !req.password) {
         const envUsername = readSecret("DATAFORSEO_USERNAME");
         const envPassword = readSecret("DATAFORSEO_PASSWORD");
@@ -220,7 +245,7 @@ app.post('/http', basicAuth, async (req: Request, res: Response) => {
             jsonrpc: "2.0",
             error: {
               code: -32001,
-              message: "Authentication required. Provide DataForSEO credentials."
+              message: "Authentication required. Provide DataForSEO credentials via Basic Auth, X-Gateway-Token header, or environment variables."
             },
             id: null
           });
@@ -229,8 +254,8 @@ app.post('/http', basicAuth, async (req: Request, res: Response) => {
         req.username = envUsername;
         req.password = envPassword;
       }
-      
-      const server = getServer(req.username, req.password); 
+
+      const server = getServer(req.username, req.password);
       console.error(Date.now().toLocaleString())
 
       const transport: StreamableHTTPServerTransport = new StreamableHTTPServerTransport({
@@ -293,18 +318,37 @@ app.get('/http', async (req: Request, res: Response) => {
 app.get('/sse', basicAuth, async (req: Request, res: Response) => {
   console.log('Received GET request to /sse (deprecated SSE transport)');
 
-  // Handle credentials
+  // Handle credentials — try Basic Auth, then X-Gateway-Token, then env vars
+  if (!req.username && !req.password) {
+    const gatewayToken = req.headers["x-gateway-token"] as string | undefined;
+    if (gatewayToken) {
+      try {
+        const creds = await loadCredentials("dataforseo", {
+          login: "DATAFORSEO_LOGIN",
+          password: "DATAFORSEO_PASSWORD",
+        }, { gatewayToken });
+        if (creds.login && creds.password) {
+          req.username = creds.login;
+          req.password = creds.password;
+          console.error(`[gateway] Per-session SSE credentials resolved via X-Gateway-Token`);
+        }
+      } catch (err) {
+        console.error("[gateway] Per-session credential fetch failed:", err);
+      }
+    }
+  }
+
   if (!req.username && !req.password) {
     const envUsername = readSecret("DATAFORSEO_USERNAME");
     const envPassword = readSecret("DATAFORSEO_PASSWORD");
-    
+
     if (!envUsername || !envPassword) {
       console.error('No DataForSEO credentials provided');
       res.status(401).json({
         jsonrpc: "2.0",
         error: {
           code: -32001,
-          message: "Authentication required. Provide DataForSEO credentials."
+          message: "Authentication required. Provide DataForSEO credentials via Basic Auth, X-Gateway-Token header, or environment variables."
         },
         id: null
       });
