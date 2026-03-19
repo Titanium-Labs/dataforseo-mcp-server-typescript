@@ -12,11 +12,25 @@ import { name, version } from '../core/utils/version.js';
 import { ModuleLoaderService } from '../core/utils/module-loader.js';
 import { initializeFieldConfiguration } from '../core/config/field-configuration.js';
 import fs from 'node:fs';
+import { loadCredentials } from '../gateway-credentials.js';
 
 // Initialize field configuration if provided
 initializeFieldConfiguration();
 console.error('Starting DataForSEO MCP Server...');
 console.error(`Server name: ${name}, version: ${version}`);
+
+// Load credentials from Claude Gateway (falls back to env vars / Docker secrets)
+try {
+  const creds = await loadCredentials('dataforseo', {
+    login: 'DATAFORSEO_LOGIN',
+    password: 'DATAFORSEO_PASSWORD',
+  });
+  // Inject into process.env so readSecret() picks them up
+  if (creds.login && !process.env.DATAFORSEO_USERNAME) process.env.DATAFORSEO_USERNAME = creds.login;
+  if (creds.password && !process.env.DATAFORSEO_PASSWORD) process.env.DATAFORSEO_PASSWORD = creds.password;
+} catch (err) {
+  console.error(`[dataforseo] No default credentials available: ${err}`);
+}
 
 /**
  * This example server demonstrates backwards compatibility with both:

@@ -9,6 +9,7 @@ import { ModuleLoaderService } from "../core/utils/module-loader.js";
 import { initializeFieldConfiguration } from '../core/config/field-configuration.js';
 import { name, version } from '../core/utils/version.js';
 import fs from 'node:fs';
+import { loadCredentials } from '../gateway-credentials.js';
 
 function readSecret(name: string): string {
   const fileVar = process.env[`${name}_FILE`];
@@ -27,6 +28,20 @@ function readSecret(name: string): string {
 initializeFieldConfiguration();
 console.error('Starting DataForSEO MCP Server...');
 console.error(`Server name: ${name}, version: ${version}`);
+
+// Load credentials from Claude Gateway (falls back to env vars / Docker secrets)
+try {
+  const creds = await loadCredentials('dataforseo', {
+    login: 'DATAFORSEO_LOGIN',
+    password: 'DATAFORSEO_PASSWORD',
+  });
+  // Inject into process.env so readSecret() picks them up
+  if (creds.login && !process.env.DATAFORSEO_USERNAME) process.env.DATAFORSEO_USERNAME = creds.login;
+  if (creds.password && !process.env.DATAFORSEO_PASSWORD) process.env.DATAFORSEO_PASSWORD = creds.password;
+} catch (err) {
+  console.error(`[dataforseo] No default credentials available: ${err}`);
+}
+
 // Create server instance
 const server = new McpServer({
     name,
