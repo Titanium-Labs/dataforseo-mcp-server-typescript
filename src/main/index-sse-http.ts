@@ -173,6 +173,21 @@ app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', sessions: Object.keys(transports).length });
 });
 
+// ── Multi-tenant auth: X-Gateway-Token is the sole auth mechanism ──
+app.use((req: Request, res: Response, next: Function) => {
+  const skipAuth = req.path === '/' || req.path === '/health';
+  if (skipAuth) return next();
+  const gatewayToken = req.headers['x-gateway-token'] as string | undefined;
+  if (!gatewayToken) {
+    res.status(401).json({
+      error: 'Missing X-Gateway-Token header',
+      help: 'Pass your Claude Gateway API token (cgw_xxx) as the X-Gateway-Token header. Get one at https://claude-gateway.coolify.titaniumlabs.us/dashboard',
+    });
+    return;
+  }
+  next();
+});
+
 // Basic Auth Middleware
 const basicAuth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
